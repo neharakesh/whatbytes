@@ -2,38 +2,45 @@ import Sidebar from '@/components/sidebar';
 import ProductCard from '@/components/productCard';
 import { products } from '@/data/product.js';
 import { LayoutGrid, ListFilter } from 'lucide-react';
+import { Suspense } from 'react';
 
 export default async function HomePage({ searchParams }) {
-  // 1. Await searchParams ONCE to get all URL data
+  // 1. Await searchParams to get all URL data
   const params = await searchParams;
   const activeCategory = params.category;
   const searchQuery = params.search;
+  const maxPrice = params.price ? parseInt(params.price) : 1000; // Get price from URL
 
   // 2. Multi-level filtering logic
   let filteredProducts = products;
 
-  // Filter by Category if it exists
+  // Filter by Category
   if (activeCategory && activeCategory.toLowerCase() !== 'all') {
     filteredProducts = filteredProducts.filter(
       (p) => p.category.toLowerCase() === activeCategory.toLowerCase()
     );
   }
 
-  // Further filter by Search Query if it exists
+  // Filter by Search Query
   if (searchQuery) {
     filteredProducts = filteredProducts.filter((p) =>
       p.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
 
+  // Filter by Price (Link this to your Sidebar Slider)
+  filteredProducts = filteredProducts.filter((p) => p.price <= maxPrice);
+
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col lg:flex-row gap-10">
         
-        {/* Sidebar */}
+        {/* Sidebar - Wrapped in Suspense for useSearchParams */}
         <aside className="w-full lg:w-72 flex-shrink-0">
           <div className="sticky top-28">
-            <Sidebar />
+            <Suspense fallback={<div className="h-96 bg-slate-200 animate-pulse rounded-3xl" />}>
+              <Sidebar />
+            </Suspense>
           </div>
         </aside>
 
@@ -57,9 +64,9 @@ export default async function HomePage({ searchParams }) {
                   {filteredProducts.length} Items
                 </span>
               </div>
-              <button className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-600">
-                <ListFilter size={18} />
-              </button>
+              <div className="px-3 text-xs font-bold text-blue-600">
+                Up to ${maxPrice}
+              </div>
             </div>
           </div>
           
@@ -69,7 +76,7 @@ export default async function HomePage({ searchParams }) {
               <div className="bg-slate-50 p-6 rounded-full mb-4 text-slate-200">
                 <LayoutGrid size={48} />
               </div>
-              <p className="text-xl text-slate-400 font-semibold tracking-tight">
+              <p className="text-xl text-slate-400 font-semibold tracking-tight text-center px-4">
                 No products found matching your criteria.
               </p>
               <a href="/" className="mt-4 text-blue-600 font-bold hover:underline cursor-pointer">
