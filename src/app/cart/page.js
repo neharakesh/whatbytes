@@ -1,16 +1,36 @@
 "use client"
+import { useState } from 'react';
 import { useCartStore } from '@/store/useCartStore';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Add this
+import SuccessModal from '@/components/successModal.js';
+
+
+
+
+
+
+
+
+
 
 export default function CartPage() {
   // Destructure all functions from your store
-  const { cart, removeFromCart, addToCart, decreaseQuantity } = useCartStore();
+
+ 
+  const router = useRouter();
+  const { cart, removeFromCart, addToCart, decreaseQuantity, clearCart } = useCartStore(); 
 
   // Price Calculations
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = cart.length > 0 ? 10.00 : 0;
   const total = subtotal + shipping;
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
+  
+
+  
 
   // Empty Cart State
   if (cart.length === 0) {
@@ -30,6 +50,18 @@ export default function CartPage() {
       </div>
     );
   }
+
+
+  
+  
+
+  const handleCheckout = () => {
+    
+    setIsModalOpen(true);
+    clearCart();
+    
+  };
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -130,9 +162,17 @@ export default function CartPage() {
             </div>
           </div>
           
-          <button className="w-full bg-[#0056b3] text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98]">
-            Checkout Now
-          </button>
+          <button 
+  onClick={handleCheckout}
+  className="w-full bg-[#0056b3] text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-[0.98]"
+>
+  Checkout Now
+</button>
+{/* Add the Modal component at the bottom */}
+      <SuccessModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
 
           <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-400 uppercase tracking-tighter">
             <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
