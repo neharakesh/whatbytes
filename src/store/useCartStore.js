@@ -6,7 +6,7 @@ export const useCartStore = create(
     (set) => ({
       cart: [],
       
-      // Add or Increment
+      // 1. Add or Increment
       addToCart: (product) => set((state) => {
         const existing = state.cart.find(item => item.id === product.id);
         if (existing) {
@@ -19,7 +19,7 @@ export const useCartStore = create(
         return { cart: [...state.cart, { ...product, quantity: 1 }] };
       }),
 
-      // Decrement Quantity (Minus Button)
+      // 2. Decrement Quantity (Minus Button)
       decreaseQuantity: (id) => set((state) => ({
         cart: state.cart.map(item =>
           item.id === id && item.quantity > 1 
@@ -28,10 +28,14 @@ export const useCartStore = create(
         )
       })),
 
-      // Remove Item Entirely (Trash Button)
+      // 3. Remove Item Entirely (Trash Button)
+      // FIX: Removed the "isModalOpen" reference from here
       removeFromCart: (id) => set((state) => ({
         cart: state.cart.filter(item => item.id !== id)
       })),
+
+      // 4. Clear Cart (Checkout Button)
+      clearCart: () => set({ cart: [] }),
     }),
     { name: 'cart-storage' }
   )
