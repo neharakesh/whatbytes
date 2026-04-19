@@ -1,6 +1,6 @@
 import Sidebar from '@/components/sidebar';
 import ProductCard from '@/components/productCard';
-import { products } from '@/data/products';
+import { products } from '@/data/product.js';
 
 export default function HomePage() {
   return (
